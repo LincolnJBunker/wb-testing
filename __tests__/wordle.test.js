@@ -1,9 +1,10 @@
 import { jest } from '@jest/globals';
 
+const mockIsWord = jest.fn(() => true);
 jest.unstable_mockModule('../src/words.js', () => {
     return {
       getWord: jest.fn(() => 'APPLE'),
-      isWord: jest.fn(() => true),
+      isWord: mockIsWord,
     };
   });
 
@@ -61,5 +62,33 @@ describe('buildGuessFromWord', () => {
         let newInstance = new Wordle()
         let guess = newInstance.buildGuessFromWord('Z____')
         expect(guess[0].status).toBe('ABSENT')
+    });
+});
+
+describe('appendGuess', () => {
+    test('throws an error if no more guesses are allowed', () => {
+        let newInstance = new Wordle(1)
+        expect(() => {
+            let guess = newInstance.appendGuess(1)
+        }).toThrow()
+    })
+
+    test('throw an error if the guess is not the length of 5', () => {
+        let newInstance = new Wordle()
+        expect(() => {
+            let guess = newInstance.appendGuess.length.not.toBe(5)
+        }).toThrow()
+    })
+
+    test('throws an error if the guess is not a word', () => {
+        const wordle = new Wordle();
+        mockIsWord.mockReturnValueOnce(false);
+        expect(() => wordle.appendGuess('GUESS')).toThrow();
+      });
+
+    test('appends the result of buildGuessFromWord to the guessess array', () => {
+        const newInstance = new Wordle()
+        newInstance.appendGuess('GUESS')
+        expect(newInstance.guesses[0]).toEqual(newInstance.buildGuessFromWord('GUESS'))
     })
 })
